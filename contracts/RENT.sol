@@ -4,37 +4,43 @@ pragma solidity ^0.8.9;
 
 contract RENT {
     
+    // added by comprido96
+    event AddedCar(uint indexed Id, address Owner);
+
     event CounterOffer (address indexed Owner, address Customer, uint Price, uint TimePeriod);
     event Offer (address indexed Owner,uint Price, uint TimePeriod );
     event Deal (address indexed seller, address indexed buyer, uint price, uint timePeriod);
     
+// OorCo := Offer or Counter Offer
+    enum OorCO {
+        O, // Offer
+        CO // CounterOffer
+    }
+
     struct Car {
+        uint id; // added by comprido96
         address owner;
         address _owner;
         uint _until;
     }
-
-    enum OorCO {
-        O,
-        CO
-    }
-    
-    struct offer {
+   
+    struct Offer {
         address seller;
         address buyer
         uint price;
         uint timePeriod;
-        bool bappoval;
-        bool sapproval;
+        bool bappoval; // buyer approval
+        bool sapproval; // seller approval
         uint carId;
         Status status;
         OorCO oorco;
     }
 
+    struct Proposal{}
+
     mapping (uint=>Car) cars;
-    mapping (bytes=>offer) listings;
-    mapping (address => mapping(uint => bool)) owner;
-    
+mapping (bytes=>offer) listings;
+    mapping (address => mapping(uint => bool)) isOwner;
     constructor() {}
 
     modifier onlyContract() {
@@ -42,10 +48,10 @@ contract RENT {
         _;
     }
 
-    function ListOffer(uint _car, uint _price, uint _timePeriod) public {
-        require(owner[msg.sender][_car], "Not an owner!");
-        bytes memory hashid = abi.encode(block.timestamp, _car, msg.sender);
-        offer storage d = listings[hashid];
+    function listOffer(uint _car, uint _price, uint _timePeriod) public {
+        require(isOwner[msg.sender][_car], "Not an owner!");
+        bytes memory hashId = abi.encode(block.timestamp, _car, msg.sender);
+        offer storage d = listings[hashId];
         
         d.owner = msg.sender;
         d.requiredChecks = ownQT;
@@ -114,5 +120,17 @@ contract RENT {
 
     function getListingInfo(bytes _hashId) public view returns() {
 
+    }
+
+    // added by comprido96
+    function addCar(uint id, address owner) onlyContract{
+        Car storage c = cars[id];
+
+        c.id = id;
+        c.owner = owner;
+
+        isOwner[owner][id] = true;
+
+        emit AddedCar(id, owner);
     }
 }
