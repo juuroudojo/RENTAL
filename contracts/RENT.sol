@@ -6,17 +6,12 @@ contract RENT {
     
     event CounterOffer (address indexed Owner, address Customer, uint Price, uint TimePeriod);
     event Offer (address indexed Owner,uint Price, uint TimePeriod );
+    event Deal (address indexed seller, address indexed buyer, uint price, uint timePeriod);
     
     struct Car {
         address owner;
         address _owner;
         uint _until;
-    }
-
-    enum Status {
-        Inactive,
-        Pending,
-        Active
     }
 
     enum OorCO {
@@ -38,7 +33,6 @@ contract RENT {
 
     mapping (uint=>Car) cars;
     mapping (bytes=>offer) listings;
-    mapping (uint=>proposal) proposals;
     mapping (address => mapping(uint => bool)) owner;
     
     constructor() {}
@@ -66,10 +60,21 @@ contract RENT {
     }
     //  TODO: Should create a new offer with unique hash having bapproval set to true and sapproval to false;
     function CounterOffer(bytes memory _id, uint _price, uint _timePeriod) public {
-        require(listings[_id].active, "Offer doesn't exist!");
-        require()
+        offer memory _o = listings[_id];
+       
+        require(_o.active, "Offer doesn't exist!");
+        require(_o.active.oorco != 1, "Counter offer already exists!");
 
-        emit CounterOffer(listings[_id].owner, msg.sender, _price, _timePeriod);
+        bytes _hash = abi.encodePacked(block.timestamp, _id, msg.sender);
+        offer storage o = listings[_hash];
+        o.seller = msg.sender;
+        o.price = _price;
+        o.oorco = 1;
+        o.timePeriod = _timePeriod;
+        o.bappoval = true;
+        o.sapproval = false;
+
+        emit CounterOffer(_o.owner, msg.sender, _price, _timePeriod);
     }
 
     // @param _id Offer id
@@ -95,9 +100,9 @@ contract RENT {
         offer memory _offer = listings[id];
         // Router pays the price in the callback function
         ICallback.(_buyer).Callback(uint _offer.price);
-        // should check if money arrived
+        // should check if money arrived *check uniswapv3pool*
         require();
-        Car storage car =_offer.CAR;
+        Car storage car = cars[_offer.CAR];
         car._owner = _caller;
         car.until = block.timestamp + _offer.timePeriod;   
     }
