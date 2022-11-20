@@ -2,13 +2,20 @@
 
 pragma solidity ^0.8.9;
 
+import {RENT} from "./RENT.sol";
+
 contract Avtomobil{
-    // Якщо малишка твоя - все файно, двигун жуже, і в добру путь, якщо крадун - треба або орендувати, або свою купляти, не поїдеш
-    function ZavestyDvygun() public{
-        require(Car.owner==msg.sender || Car._owner== msg.sender, , "Brrr, Brrr, Brrr, Zagloh");
-        dvygun.vroooooom();
-        if(Car.model == Zhygul) {
-            revert("Brrr, Brrr, Brrr, Zagloh");
+    bool started
+
+    function Start(address _platform, uint _carid) public{
+        (address owner, address _owner, uint until) = IPlatform(_platform).getCarInfo(_id)
+
+        require(owner == msg.sender || _owner == msg.sender, "Not an owner!");
+        if(_owner == msg.sender) {
+            require(until <= block.timestamp, "Rental expired!");
+            _;
         }
+
+        started = true;
     }
 }
