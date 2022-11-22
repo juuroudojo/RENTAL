@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.9;
 
-contract RENT {
+contract Rent {
     
     // added by comprido96
     event AddedCar(uint indexed Id, address Owner);

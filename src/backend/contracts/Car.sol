@@ -2,10 +2,10 @@
 
 pragma solidity ^0.8.9;
 
-import {RENT} from "./RENT.sol";
+import {Rent} from "./Rent.sol";
 
-contract Avtomobil{
-    bool started
+contract Car {
+    bool started;
 
     function Start(address _platform, uint _carid) public{
         (address owner, address _owner, uint until) = IPlatform(_platform).getCarInfo(_id)
