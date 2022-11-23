@@ -11,7 +11,7 @@ contract RENT {
     event Offer (address indexed Owner,uint Price, uint TimePeriod );
     event Deal (address indexed seller, address indexed buyer, uint price, uint timePeriod);
     
-// OorCo := Offer or Counter Offer
+    // OorCo := Offer or Counter Offer
     enum OorCO {
         O, // Offer
         CO // CounterOffer
@@ -39,7 +39,7 @@ contract RENT {
     struct Proposal{}
 
     mapping (uint=>Car) cars;
-mapping (bytes=>offer) listings;
+    mapping (bytes=>offer) listings;
     mapping (address => mapping(uint => bool)) isOwner;
     constructor() {}
 

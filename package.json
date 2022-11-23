@@ -2,6 +2,14 @@
   "name": "hardhat-project",
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox": "^1.0.1",
-    "hardhat": "^2.10.2"
+    "eslint-plugin-react": "^7.31.11",
+    "hardhat": "^2.10.2",
+    "web-vitals": "^3.1.0"
+  },
+  "dependencies": {
+    "create-react": "^0.0.0",
+    "jsbi": "^3.2.5",
+    "react-bootstrap-icons": "^1.10.2",
+    "react-spinners": "^0.13.6"
   }
 }

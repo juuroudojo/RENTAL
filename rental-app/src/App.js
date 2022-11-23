@@ -1,23 +1,76 @@
-import logo from './logo.svg';
 import './App.css';
+import { useState, useEffect} from 'react';
+import { ethers } from 'ethers';
+
+import PageButton from './components/PageButton';
+import ConnectButton from './components/connectButton';
+import { GearFill } from 'react-bootstrap-icons';
 
 function App() {
+  const [provider, setProvider] = useState(undefined)
+  const [signer, setSigner] = useState(undefined)
+  const [signerAddress, setSignerAddress] = useState(undefined)
+
+  useEffect(() => {
+    const onLoad = async () => {
+      const provider = new ethers.providers.Web3Provider(window.ethereum)
+      setProvider(provider)
+    }
+    onLoad()
+  }, [])
+
+  const getSigner = async provider => {
+    provider.send("eth_requestAccounts", []);
+    const signer = provider.getSigner();
+    setSigner(signer)
+  }
+  const isConnected = () => signer !== undefined
+  const getWalletAddress = () => {
+    signer.getAddress()
+    .then(address => {
+      setSignerAddress(address)
+    })
+  }
+
+  if (signer !== undefined) {
+    getWalletAddress()
+  }
+  
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="appNav">
+        <div className="my-2 buttonContainer buttonContainerTop">
+          <PageButton name={"AddOffer"} isBold={true} />
+          <PageButton name={"Offers"}  />
+          <PageButton name={"My Offers"}  />
+          <PageButton name={"My Rentals"} />
+        </div>
+
+        <div className="rightNav">
+          <div className="connectButtonContainer">
+            <ConnectButton
+            provider={provider}
+            isConnected={isConnected}
+            signerAddress={signerAddress}
+            getSigner={getSigner}
+            />
+          </div>
+          <div className="my-2 buttonContainer">
+            <PageButton name={"Info"} isBold={true} />
+          </div>
+        </div>
+      </div>
+      <div className="appBody">
+        <div className='swapContainer'>
+        <div className='swapHeader'> 
+          <span className='swapText'> Add Offer </span>
+           </div>
+          <div className='dataInput'>
+            Enter your price 
+          </div>
+          </div>
+        </div>
     </div>
   );
 }
