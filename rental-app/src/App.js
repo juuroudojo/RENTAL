@@ -5,11 +5,13 @@ import { ethers } from 'ethers';
 import PageButton from './components/PageButton';
 import ConnectButton from './components/connectButton';
 import { GearFill } from 'react-bootstrap-icons';
+import ConfigModal from './components/ConfigModal';
 
 function App() {
   const [provider, setProvider] = useState(undefined)
   const [signer, setSigner] = useState(undefined)
   const [signerAddress, setSignerAddress] = useState(undefined)
+  const [showModal, setShowModal] = useState(undefined)
 
   useEffect(() => {
     const onLoad = async () => {
@@ -66,8 +68,21 @@ function App() {
         <div className='swapHeader'> 
           <span className='swapText'> Add Offer </span>
            </div>
-          <div className='dataInput'>
-            Enter your price 
+          <div className='buttonContainer3' onClick={() => setShowModal(true)}>
+            {"Choose car"}
+            {showModal && (
+              <ConfigModal
+                onClose={() => setShowModal(false)}
+                 />
+            )}
+          </div>
+          <div className='buttonContainer3' onClick={() => setShowModal(true)}>
+            {"Set Price"}
+            {showModal && (
+              <ConfigModal
+                onClose={() => setShowModal(false)}
+                 />
+            )}
           </div>
           </div>
         </div>
