@@ -1,6 +1,14 @@
 import React from "react"
 
-export default function MyOffers() {
+class MyOffers extends React.Component {
+    constructor(props) {
+        super(props);
+    }
 
-    return <h1>Hellooo</h1>
+    render() {
+
+        return <h1>Hellooo</h1>
+    }
 }
+
+export default MyOffers; 

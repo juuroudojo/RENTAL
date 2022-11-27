@@ -21,6 +21,7 @@ function App() {
   const [signer, setSigner] = useState(undefined)
   const [signerAddress, setSignerAddress] = useState(undefined)
   const [showModal, setShowModal] = useState(undefined)
+  const [offers, setOffers] = useState([])
 
   useEffect(() => {
     const onLoad = async () => {
@@ -47,11 +48,27 @@ function App() {
     getWalletAddress()
   }
 
-  const cars = [
-    { id: 0, owner: 'fede', price: 100, model: "Lambo", until: 10 },
-    { id: 1, owner: 'fede', price: 150, model: "Ferrari", until: 12 },
-    { id: 2, owner: 'daniel', price: 200, model: "Bugatti", until: 20 }
+  const cars = [{ id: 0, owner: 'fede', price: 100, model: "Lambo", until: 10, format: "hours" },
+  { id: 1, owner: 'fede', price: 150, model: "Ferrari", until: 12, format: "hours" },
+  { id: 2, owner: 'daniel', price: 200, model: "Bugatti", until: 20, format: "hours" }
   ];
+
+
+  //setOffers(oldArray => [...oldArray, cars]);
+
+
+  /* for local development only
+  *
+  *
+  * 
+  */
+  const timeConversion = { hours: 60 * 60, days: 24 * 60 * 60, weeks: 7 * 24 * 60 * 60 }
+
+  /*
+  *
+  *
+  * 
+  */
 
   return (
     <div className="App">
@@ -70,8 +87,18 @@ function App() {
       <div className="appBody">
         <Routes>
           <Route path="/" element={< Home />} />
-          <Route path="/addoffer" element={< AddOffer />} />
           <Route path="/offers" element={< Offers offers={cars} />} />
+          <Route
+            exact
+            path="/addoffer"
+            element={
+              isConnected() ? (
+                <AddOffer offers={offers} />
+              ) : (
+                <MustConnect />
+              )
+            }
+          />
           <Route
             exact
             path="/myoffers"
