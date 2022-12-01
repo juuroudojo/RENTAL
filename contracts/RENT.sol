@@ -2,19 +2,26 @@
 
 pragma solidity ^0.8.9;
 
+import {ICallback} from "./interfaces/ICallback.sol";
+
 contract RENT {
     
     // added by comprido96
     event AddedCar(uint indexed Id, address Owner);
 
     event CounterOffer (address indexed Owner, address Customer, uint Price, uint TimePeriod);
-    event Offer (address indexed Owner,uint Price, uint TimePeriod );
+    event Proposal (address indexed Owner,uint Price, uint TimePeriod );
     event Deal (address indexed seller, address indexed buyer, uint price, uint timePeriod);
     
     // OorCo := Offer or Counter Offer
     enum OorCO {
-        O, // Offer
-        CO // CounterOffer
+        O, 
+        CO 
+    }
+
+    enum Status {
+        Inactive,
+        Active
     }
 
     struct Car {
@@ -26,7 +33,7 @@ contract RENT {
    
     struct Offer {
         address seller;
-        address buyer
+        address buyer;
         uint price;
         uint timePeriod;
         bool bappoval; // buyer approval
@@ -36,94 +43,116 @@ contract RENT {
         OorCO oorco;
     }
 
-    struct Proposal{}
-
     mapping (uint=>Car) cars;
-    mapping (bytes=>offer) listings;
+    mapping (bytes=>Offer) listings;
     mapping (address => mapping(uint => bool)) isOwner;
-    constructor() {}
+    bytes[] public hashes;
+    constructor() {
+    }
 
     modifier onlyContract() {
         require(msg.sender == address(this));
         _;
     }
 
-    function listOffer(uint _car, uint _price, uint _timePeriod) public {
+    function listOffer(uint _car, uint _price, uint _timePeriod) 
+            
+            public returns(bytes memory hash){
         require(isOwner[msg.sender][_car], "Not an owner!");
         bytes memory hashId = abi.encode(block.timestamp, _car, msg.sender);
-        offer storage d = listings[hashId];
+        Offer storage d = listings[hashId];
         
-        d.owner = msg.sender;
-        d.requiredChecks = ownQT;
-        d.status = Active;
-        d.requiredChecks = ownQT;
-        d.status = Pending;
-
-        d.id = hashid;
+        d.seller = msg.sender;
         d.timePeriod = _timePeriod;
-        d.oorco.o;
+        d.oorco = OorCO.O;
         d.price = _price;
+
+        hashes.push(hashId);
+
+        emit Proposal (msg.sender, _price, _timePeriod);
+
+        return hashId;
     }
     //  TODO: Should create a new offer with unique hash having bapproval set to true and sapproval to false;
-    function CounterOffer(bytes memory _id, uint _price, uint _timePeriod) public {
-        offer memory _o = listings[_id];
+    function counterOffer(bytes memory _id, uint _price, uint _timePeriod) public returns(bytes memory hash) {
+        Offer memory _o = listings[_id];
        
-        require(_o.active, "Offer doesn't exist!");
-        require(_o.active.oorco != 1, "Counter offer already exists!");
+        require(_o.status == Status.Active || _o.oorco == OorCO.O,
+            "Offer doesn't exist!");
+        require(_o.status != Status.Active  || _o.oorco == OorCO.CO,
+            "Counter offer already exists!");
 
-        bytes _hash = abi.encodePacked(block.timestamp, _id, msg.sender);
-        offer storage o = listings[_hash];
-        o.seller = msg.sender;
+        bytes memory _hash = abi.encodePacked(block.timestamp, _id, msg.sender);
+        Offer storage o = listings[_hash];
+        o.buyer = msg.sender;
+        o.seller = _o.seller;
         o.price = _price;
-        o.oorco = 1;
+        o.oorco = OorCO.CO;
         o.timePeriod = _timePeriod;
         o.bappoval = true;
         o.sapproval = false;
 
-        emit CounterOffer(_o.owner, msg.sender, _price, _timePeriod);
+        emit CounterOffer(_o.buyer, msg.sender, _price, _timePeriod);
+
+        hashes.push(_hash);
+
+        return _hash;
     }
 
     // @param _id Offer id
     // @param _sellerOrBuyer 0 for seller, 1 for buyer
 
-    function Approve(bytes memory _id, bool _sellerOrBuyer) public {
+    function approve(bytes memory _id, bool _sellerOrBuyer) public {
         
-        offer memory d = listings[_id];
-        if(_sellerOrBuyer) {
-            require(d.OorCO.co && d.seller == msg.sender, "Counteroffer doesn't exist or You are not a seller!");
+        Offer memory d = listings[_id];
+        if(!_sellerOrBuyer) {
+            require(d.oorco == OorCO.CO && d.seller == msg.sender, 
+            "Counteroffer doesn't exist or You are not a seller!");
             d.sapproval = false;
         } else {
             require(d.buyer == msg.sender, "Not a buyer");
             d.bappoval = true;
         }
         // if (d.sapproval || d.bappoval) {
-            finaliseDeal(_id, d.buyer)
-        // }
+            //finaliseDeal(_id, d.buyer);
     }
 
     // If when calling a router to take funds buyer has to pay it reverts - the offer should be terminated and the buyer receives 1 of 3 warnings for sabotaging
-    function finaliseDeal(bytes _id, address _buyer) public onlyContract {
-        offer memory _offer = listings[id];
+    function finaliseDeal(bytes memory _id, address _buyer) public onlyContract {
+        Offer memory _offer = listings[_id];
         // Router pays the price in the callback function
-        ICallback.(_buyer).Callback(uint _offer.price);
+        ICallback(_buyer).callback(_offer.price);
         // should check if money arrived *check uniswapv3pool*
-        require();
-        Car storage car = cars[_offer.CAR];
-        car._owner = _caller;
-        car.until = block.timestamp + _offer.timePeriod;   
+        // require();
+        Car storage car = cars[_offer.carId];
+        car._owner = _buyer;
+        car._until = block.timestamp + _offer.timePeriod;   
+
+        emit Deal(_offer.seller, _offer.buyer, _offer.price, _offer.timePeriod);
     }
 
     function getCarInfo(uint _id) public view returns(address, address, uint) {
         Car memory c = cars[_id];
-        return(c.owner, c._owner, c.until);
+        return(c.owner, c._owner, c._until);
     }
 
-    function getListingInfo(bytes _hashId) public view returns() {
+    function getListingInfo(bytes memory _hashId) public view returns(address seller, address buyer, uint price, uint timePeriod, bool bapproval, bool sapproval, uint carId, Status status, OorCO oorco) {
+        Offer memory o = listings[_hashId];
 
+        return(
+        o.seller,
+        o.buyer,
+        o.price,
+        o.timePeriod,
+        o.bappoval,
+        o.sapproval,
+        o.carId,
+        o.status,
+        o.oorco);
     }
 
     // added by comprido96
-    function addCar(uint id, address owner) onlyContract{
+    function addCar(uint id, address owner) public {
         Car storage c = cars[id];
 
         c.id = id;
