@@ -93,7 +93,7 @@ function App() {
             path="/addoffer"
             element={
               isConnected() ? (
-                <AddOffer offers={offers} />
+                <AddOffer offers={cars} />
               ) : (
                 <MustConnect />
               )

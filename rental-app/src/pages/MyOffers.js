@@ -7,7 +7,15 @@ class MyOffers extends React.Component {
 
     render() {
 
-        return <h1>Hellooo</h1>
+        return (
+            <div className="RedirectAddOffer">
+                <h1>It seems like you don't have any offers placed at the moment. Would you like to place one?</h1>
+                <a href="/addoffer">
+                    <input type="button" value="AddOffer" />
+                </a>
+
+            </div>
+        )
     }
 }
 

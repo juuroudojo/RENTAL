@@ -3,8 +3,8 @@
 pragma solidity ^0.8.9;
 
 contract Callback {
-    function callback(uint price) public {
-        (bool success,) = msg.sender.call{value:price}("");
-        require(success);
+    function callback(uint price, address receiver) public {
+        (bool success, ) = receiver.call{value: price}("");
+        require(true);
     }
 }

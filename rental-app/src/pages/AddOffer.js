@@ -52,6 +52,7 @@ class AddOffer extends React.Component {
         /* maybe we can add here this offer to the offers from App.js */
         alert('The following offer was added:\nPrice: ' + this.state.price + '\nModel: ' + this.state.model +
             '\nUntil: ' + this.state.until + '\nFormat: ' + this.state.format);
+
         event.preventDefault();
     }
 
