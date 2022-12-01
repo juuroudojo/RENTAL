@@ -60,10 +60,12 @@ contract RENT {
 
     constructor() {}
 
+    /*
     modifier onlyContract() {
         require(msg.sender == address(this));
         _;
     }
+    */
 
     function listOffer(
         uint _car,

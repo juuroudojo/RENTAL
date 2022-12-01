@@ -82,6 +82,12 @@ describe("Rent", () => {
             const hash = await rental.listOffer(1, ethers.utils.parseEther("2"), 100000)
             expect(rental.connect(Makima).approve(hash, 0)).to.be.revertedWith("Counteroffer doesn't exist or You are not a seller!");
         });
+
+        it("Should fail to approve: Not a buyer", async () => {
+            await rental.addCar(1, Denji.address);
+            const hash = await rental.listOffer(1, ethers.utils.parseEther("2"), 100000)
+            expect(rental.connect(Makima).approve(hash, 1)).to.be.revertedWith("Not a buyer");
+        });
     })
 
     describe("finaliseDeal", async () => {
