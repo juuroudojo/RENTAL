@@ -126,7 +126,7 @@ contract RENT {
         // require();
         Car storage car = cars[_offer.carId];
         car._owner = _buyer;
-        car._until = block.timestamp + _offer.timePeriod;   
+        car._until = block.timestamp + _offer.timePeriod; 
 
         emit Deal(_offer.seller, _offer.buyer, _offer.price, _offer.timePeriod);
     }
