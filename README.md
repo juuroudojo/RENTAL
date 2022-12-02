@@ -1,6 +1,10 @@
-# CAR RENTAL PLATFORM
+## CAR RENTAL PLATFORM <img src=https://github.com/juuroudojo/images/blob/main/12wsvdpa6hhe.png height = "35" /> 
 
-Authors: @juuroudojo, @comprido96
+Authors: @comprido96, @juuroudojo,
+
+# DESCRIPTION
+
+
 
 This project demonstrates a basic example of DApp concerning car rentals.
 The logic is based around the Rent contract which acts as a platform in which users can add their cars and list them on offers. Moreover, renters can 
