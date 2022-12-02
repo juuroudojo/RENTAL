@@ -1,4 +1,4 @@
-<img src=https://github.com/juuroudojo/images/blob/main/12wsvdpa6hhe.png height = "35" /> # CAR RENTAL PLATFORM 
+ # CAR RENTAL PLATFORM <img src=https://github.com/juuroudojo/images/blob/main/12wsvdpa6hhe.png height = "35" />
 
 Authors: @comprido96, @juuroudojo,
 
