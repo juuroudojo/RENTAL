@@ -5,12 +5,9 @@ Authors: @comprido96, @juuroudojo,
 ## DESCRIPTION
 
 
+Our infrastructure implements a set of smart contracts which guarantees communication between depending branches.
 
-This project demonstrates a basic example of DApp concerning car rentals.
-The logic is based around the Rent contract which acts as a platform in which users can add their cars and list them on offers. Moreover, renters can 
-sign for an offer or place a counteroffer in order to get a deal on their terms. 
-It's responsibility of the car owner to approve any counteroffer and finalise the deal; after that, the rent starts.
-
-The project comes with a contracts folder (Solidity) and a test script (TypeScript), within the Hardhat framework. 
-Moreoever, we developed a mockup user interface with React which is still in Beta phase.
-
+1.Proxy contract verifies a car owner and provides the information to the rental platform.
+2.Rental platform then verifies the details of the deal and finalizes it by calling the callback function on proxy again.
+3.Proxy contract transfer the funds to
+Rental platform, which then lets sides have their share of the deal.
