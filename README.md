@@ -1,4 +1,4 @@
-# Sample Hardhat Project
+# CAR RENTAL PLATFORM
 
 Authors: @juuroudojo, @comprido96
 
