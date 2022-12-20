@@ -1,6 +1,6 @@
  # CAR RENTAL PLATFORM <img src=https://github.com/juuroudojo/images/blob/main/12wsvdpa6hhe.png height = "35" />
 
-Authors: @comprido96, @juuroudojo,
+Authors: @comprido96, @juuroudojo
 
 ## DESCRIPTION
 
